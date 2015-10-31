@@ -13,17 +13,6 @@ namespace UnitTests
     public class CoinTests
     {
         [TestMethod]
-        public void CoinsInsertAddedToBuffer()
-        {
-            var mockProducts = new Mock<IProductLibrary>(0);
-            var mockMoney = new Mock<IMoneyHolder>();
-            var mock = new Mock<VendingDevice>("test", mockProducts.Object, mockMoney.Object);
-            mock.Object.InsertCoin(new Money() { Euros = 1 });
-          //  Assert.IsTrue(mock.Object.OrderBuffer.Euros == 1);
-            //TODO think if this test is required - if needed access to the money holder outside
-        }
-
-        [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void CoinsInsertNotSupported()
         {

@@ -14,7 +14,7 @@ namespace VendingMachine.Vending
     /// </summary>
     public class VendingMachine : IVendingMachine
     {
-        private string  _manufacturer = String.Empty;        
+        private string  _manufacturer = String.Empty;
         private IProductLibrary _library;
         private IMoneyHolder _moneyHolder;
 

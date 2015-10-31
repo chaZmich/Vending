@@ -53,6 +53,7 @@ namespace VendingMachine.Products
             get { throw new NotImplementedException(); }
         }
 
+        #region public properties
         /// <summary>
         /// Default implementation for getting all products
         /// </summary>
@@ -69,7 +70,7 @@ namespace VendingMachine.Products
         /// <param name="id">Position of the deleted project</param>
         public virtual void RemoveProduct(int id)
         {
-            
+
             if (_products.Count > 0)
             {
                 var backedProducts = _products;
@@ -127,7 +128,7 @@ namespace VendingMachine.Products
             {
                 throw new IndexOutOfRangeException("Product capacity limited");
             }
-            
+
         }
 
 
@@ -137,7 +138,15 @@ namespace VendingMachine.Products
         /// <param name="products">Products collection to override existing</param>
         public void SetProducts(List<Product> products)
         {
-            _products = products;
-        }
+            if (products.Count <= _productCapacity)
+            {
+                _products = products;
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException("Product collection is bigger then maximum capacity");
+            }
+        } 
+        #endregion
     }
 }

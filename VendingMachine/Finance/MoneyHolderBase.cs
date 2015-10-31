@@ -20,6 +20,7 @@ namespace VendingMachine.Finance
         #endregion
 
 
+        #region public properties
         /// <summary>
         /// Gets accounted money
         /// </summary>
@@ -90,6 +91,7 @@ namespace VendingMachine.Finance
         public void SubstractBufferedAmount(Money money)
         {
             _bufferedAccount -= money;
-        }
+        } 
+        #endregion
     }
 }
