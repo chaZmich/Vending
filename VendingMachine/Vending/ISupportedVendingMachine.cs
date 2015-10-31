@@ -26,6 +26,5 @@ namespace VendingMachine.Vending
         /// </summary>
         /// <param name="productId"></param>
         void RemoveProduct(int productId);
-
     }
 }

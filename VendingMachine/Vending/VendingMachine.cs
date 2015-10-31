@@ -55,6 +55,17 @@ namespace VendingMachine.Vending
         }
 
         /// <summary>
+        /// Order buffer for current sesstion
+        /// </summary>
+        public Money OrderBuffer
+        {
+            get
+            {
+                return _orderBuffer;
+            }
+        }
+
+        /// <summary>
         /// List of products available for ordering
         /// </summary>
         public Product[] Products
@@ -80,8 +91,19 @@ namespace VendingMachine.Vending
             {
                 throw new ArgumentException("Coin not supported");
             }
-            _orderBuffer = MoneyHelper.CalculateChange(_orderBuffer, amount);
-            return _orderBuffer;
+            var _bufferState = _orderBuffer;
+            try
+            {
+                _orderBuffer =_orderBuffer + amount;
+                return _orderBuffer;
+            }
+            catch (Exception ex)
+            {
+                // in case of calculation failed revert buffer to previous state
+                // and throw exception
+                _orderBuffer = _bufferState;
+                throw ex;
+            }
         }
 
         /// <summary>
@@ -107,12 +129,9 @@ namespace VendingMachine.Vending
                 listedProducts.RemoveAt(productNumber - 1);
                 _products = listedProducts.ToArray();
                 // processing money
-                _amount.Euros = _orderBuffer.Euros;
-                _amount.Cents = _orderBuffer.Cents;
-                _orderBuffer = new Money();
-                //
+                _amount = _amount + product.Price;
+                _orderBuffer = _orderBuffer - product.Price;
                 return product;
-                //TODO remove monew and capacity
             }
             else
             {
@@ -132,9 +151,19 @@ namespace VendingMachine.Vending
         {
             if (_products.Length < _productCapacity)
             {
-                //dirty adding. Need to add method to add, decrease and update products. Thread safety !!
-                var initialProducts = _products.Length;
-                Array.Resize(ref _products, initialProducts + 1);
+                var backedProducts = _products;
+                try
+                {
+                    var initialProducts = _products.Length;
+                    Array.Resize(ref _products, initialProducts + 1);
+                    _products[initialProducts] = newProduct;
+                }
+                catch (Exception ex)
+                {
+                    // revert any changes to products before sending ex further
+                    _products = backedProducts;
+                    throw ex;
+                }
             }
             else
             {
@@ -146,24 +175,26 @@ namespace VendingMachine.Vending
         {
             if (_products.Length > 0)
             {
-                var product = _products[productId - 1];
-                var listedProducts = new List<Product>(_products);
-                listedProducts.RemoveAt(productId - 1);
-                _products = listedProducts.ToArray();
+                var backedProducts = _products;
+                try
+                {
+                    var product = _products[productId - 1];
+                    var listedProducts = new List<Product>(_products);
+                    listedProducts.RemoveAt(productId - 1);
+                    _products = listedProducts.ToArray();
+                }
+                catch (Exception ex)
+                {
+                    // revert any changes to products before sending ex further
+                    _products = backedProducts;
+                    throw ex;
+                }
             }
             else
             {
                 throw new IndexOutOfRangeException("Product does not exists");
             }
             
-        }
-
-        public Money OrderBuffer
-        {
-            get
-            {
-                return _orderBuffer;
-            }
         }
     }
 }
