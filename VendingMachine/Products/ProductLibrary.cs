@@ -12,7 +12,12 @@ namespace VendingMachine.Products
         /// 
         
         ///Hiding parameterless constructor to avoid creating libraries without capacity
-        private ProductLibrary()
+        public ProductLibrary() : base(100)
+        {
+           
+        }
+
+        public ProductLibrary(int productCapacity) : base(productCapacity)
         {
 
         }

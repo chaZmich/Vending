@@ -26,8 +26,8 @@ namespace UnitTests
         public void NewMachineNotEmptyManufacturer()
         {
             var mockMoney = new Mock<IMoneyHolder>();
-            var mockProducts = new Mock<IProductLibrary>();
-            var mock = new Mock<VendingDevice>("test", 0, mockProducts.Object, mockMoney.Object);
+            var mockProducts = new Mock<IProductLibrary>(0);
+            var mock = new Mock<VendingDevice>("test", mockProducts.Object, mockMoney.Object);
             Assert.IsFalse(mock.Object.Manufacturer == String.Empty);
         }
     }
