@@ -23,7 +23,7 @@ namespace UnitTests
         [TestMethod]
         public void NewMachineNotEmptyManufacturer()
         {
-            var mock = new Mock<VendingDevice>("test");
+            var mock = new Mock<VendingDevice>("test",0);
             Assert.IsFalse(mock.Object.Manufacturer == String.Empty);
         }
     }
