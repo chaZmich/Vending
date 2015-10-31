@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VendingMachine.Helpers;
 
 namespace VendingMachine.Vending
 {
@@ -75,10 +76,11 @@ namespace VendingMachine.Vending
         /// <returns></returns>
         public Money InsertCoin(Money amount)
         {
-            //TODO add validation for inserted coins
-            _orderBuffer.Euros += amount.Euros;
-            _orderBuffer.Cents += amount.Cents;
-            //TODO also check overflows with cents
+            if (!MoneyHelper.ValidateInsertedCoin(amount))
+            {
+                throw new ArgumentException("Coin not supported");
+            }
+            _orderBuffer = MoneyHelper.CalculateChange(_orderBuffer, amount);
             return _orderBuffer;
         }
 

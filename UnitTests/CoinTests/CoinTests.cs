@@ -18,7 +18,7 @@ namespace UnitTests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(Exception))]
+        [ExpectedException(typeof(ArgumentException))]
         public void CoinsInsertNotSupported()
         {
             var mock = new Mock<VendingDevice>("test", 1);
