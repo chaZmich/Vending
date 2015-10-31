@@ -14,44 +14,49 @@ namespace UnitTests
         {
             var mock = new Mock<VendingDevice>("test");
             var products =  mock.Object.Products;
-            //dirty adding. Need to add method to add, decrease and update products. Thread safety !!
-            var initialProducts = products.GetLength(1);
-            Array.Resize(ref products,initialProducts+1);
-            mock.Object.Products = products;
-            Assert.IsTrue(mock.Object.Products.GetLength(1) == initialProducts + 1);
+            mock.Object.AddProduct(new Product());
+            Assert.IsTrue(mock.Object.Products.Length == mock.Object.Products.Length + 1);
         }
 
         [TestMethod]
         [ExpectedException(typeof(Exception))]
         public void AddProductOverMaximumCapacity()
         {
-
+            var mock = new Mock<VendingDevice>("test",0);
+            mock.Object.AddProduct(new Product());
         }
 
         [TestMethod]
         public void RemoveProductDecreasingTotal()
         {
-
+            var mock = new Mock<VendingDevice>("test", 1);
+            mock.Object.Products = new Product[] {new Product()};
+            mock.Object.RemoveProduct(1);
+            Assert.IsTrue(mock.Object.Products.Length == 0);
         }
 
         [TestMethod]
         [ExpectedException(typeof(IndexOutOfRangeException))]
         public void RemoveProductFromEmptyProductsCausesException()
         {
-
+            var mock = new Mock<VendingDevice>("test", 1);
+            mock.Object.RemoveProduct(1);
         }
 
         [TestMethod]
         public void ProductOrderedDecreaseTotal()
         {
-
+            var mock = new Mock<VendingDevice>("test", 1);
+            mock.Object.Products = new Product[] { new Product() };
+            mock.Object.Buy(1);
+            Assert.IsTrue(mock.Object.Products.Length == 0);
         }
 
 
         [TestMethod]
         public void ProductOrderedSavesCoins()
         {
-
+            Assert.IsTrue(false);
         }
 
 
@@ -59,7 +64,9 @@ namespace UnitTests
         [ExpectedException(typeof(Exception))]
         public void ProductOrderedNotExistingProduct()
         {
-
+            var mock = new Mock<VendingDevice>("test", 1);
+            mock.Object.Products = new Product[] { new Product() };
+            mock.Object.Buy(-999);
         }
     }
 }

@@ -9,9 +9,9 @@ namespace VendingMachine.Vending
     /// <summary>
     /// Vending machine basic implementation
     /// </summary>
-    public class VendingMachine : IVendingMachine
+    public class VendingMachine : ISupportedVendingMachine
     {
-        public VendingMachine(string manufacturer)
+        public VendingMachine(string manufacturer, int productCapacity)
         {
 
         }
@@ -60,6 +60,37 @@ namespace VendingMachine.Vending
         public Product Buy(int productNumber)
         {
             throw new NotImplementedException();
+        }
+
+        public int ProductCapacity
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public void AddProduct(Product newProduct)
+        {
+            //dirty adding. Need to add method to add, decrease and update products. Thread safety !!
+            //var initialProducts = products.GetLength(1);
+            //Array.Resize(ref products, initialProducts + 1);
+            //mock.Object.Products = products;
+            throw new NotImplementedException();
+        }
+
+        public void RemoveProduct(int productId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Money OrderBuffer
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }

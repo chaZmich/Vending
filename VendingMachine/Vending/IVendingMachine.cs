@@ -11,7 +11,7 @@ namespace VendingMachine.Vending
         /// <summary>
         /// Vending machine manufacturer.
         /// </summary>
-        string Manufacturer { get; }
+        string Manufacturer { get; }        
         /// <summary>
         /// Amount of money inserted into vending machine.
         /// </summary>

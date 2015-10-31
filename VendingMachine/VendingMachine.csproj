@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Vending\ISupportedVendingMachine.cs" />
     <Compile Include="Vending\IVendingMachine.cs" />
     <Compile Include="Vending\Money.cs" />
     <Compile Include="Vending\Product.cs" />
