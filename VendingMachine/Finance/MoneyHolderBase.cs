@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace VendingMachine.Finance
 {
-    public class MoneyHolderBase : IMoneyHolder
+    public abstract class MoneyHolderBase : IMoneyHolder
     {
         #region private fields
         /// <summary>

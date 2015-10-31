@@ -8,6 +8,6 @@ namespace VendingMachine.Finance
 {
     public class MoneyHolder : MoneyHolderBase
     {
-
+        /// Moeny holder class. Default implementations are ok for now        
     }
 }
