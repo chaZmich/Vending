@@ -12,14 +12,14 @@ namespace UnitTests
         [TestMethod]
         public void AddProductIncreasingTotal()
         {
-            var mock = new Mock<VendingDevice>("test");
-            var products =  mock.Object.Products;
+            var mock = new Mock<VendingDevice>("test",1);
+            var products =  mock.Object.Products.Length;
             mock.Object.AddProduct(new Product());
-            Assert.IsTrue(mock.Object.Products.Length == mock.Object.Products.Length + 1);
+            Assert.IsTrue(mock.Object.Products.Length == products + 1);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(Exception))]
+        [ExpectedException(typeof(IndexOutOfRangeException))]
         public void AddProductOverMaximumCapacity()
         {
             var mock = new Mock<VendingDevice>("test",0);
@@ -61,7 +61,7 @@ namespace UnitTests
 
 
         [TestMethod]
-        [ExpectedException(typeof(Exception))]
+        [ExpectedException(typeof(IndexOutOfRangeException))]
         public void ProductOrderedNotExistingProduct()
         {
             var mock = new Mock<VendingDevice>("test", 1);

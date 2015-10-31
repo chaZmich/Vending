@@ -15,7 +15,7 @@ namespace VendingMachine.Vending
         private int     _productCapacity = 0;
         private Money   _amount = new Money();
         private Product[] _products = new Product[0];
-        private Money _orderBuffer = new Money();
+        private Money   _orderBuffer = new Money();
 
         /// <summary>
         /// Vending machine constructor.
@@ -98,7 +98,19 @@ namespace VendingMachine.Vending
         /// <returns>Ordered product</returns>
         public Product Buy(int productNumber)
         {
-            throw new NotImplementedException();
+            if (_products.Length >= productNumber)
+            {
+                var product = _products[productNumber-1];
+                var listedProducts = new List<Product>(_products);
+                listedProducts.RemoveAt(productNumber - 1);
+                _products = listedProducts.ToArray();
+                return product;
+                //TODO remove monew and capacity
+            }
+            else
+            {
+                throw new IndexOutOfRangeException("Product does not exist");
+            }
         }
 
         /// <summary>
@@ -111,16 +123,32 @@ namespace VendingMachine.Vending
 
         public void AddProduct(Product newProduct)
         {
-            //dirty adding. Need to add method to add, decrease and update products. Thread safety !!
-            //var initialProducts = products.GetLength(1);
-            //Array.Resize(ref products, initialProducts + 1);
-            //mock.Object.Products = products;
-            throw new NotImplementedException();
+            if (_products.Length < _productCapacity)
+            {
+                //dirty adding. Need to add method to add, decrease and update products. Thread safety !!
+                var initialProducts = _products.Length;
+                Array.Resize(ref _products, initialProducts + 1);
+            }
+            else
+            {
+                throw new IndexOutOfRangeException("Product capacity limited");
+            }
         }
 
         public void RemoveProduct(int productId)
         {
-            throw new NotImplementedException();
+            if (_products.Length > 0)
+            {
+                var product = _products[productId - 1];
+                var listedProducts = new List<Product>(_products);
+                listedProducts.RemoveAt(productId - 1);
+                _products = listedProducts.ToArray();
+            }
+            else
+            {
+                throw new IndexOutOfRangeException("Product does not exists");
+            }
+            
         }
 
         public Money OrderBuffer
