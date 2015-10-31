@@ -57,7 +57,7 @@ namespace UnitTests
         public void ProductOrderedSavesCoins()
         {
             var mock = new Mock<VendingDevice>("test", 1);
-            mock.Object.Products = new Product[] { new Product() };
+            mock.Object.Products = new Product[] { new Product() {Price = new Money() {Euros = 1, Cents = 10}}};
             mock.Object.InsertCoin(new Money() { Cents = 10, Euros = 1 });
             mock.Object.Buy(1);
             Assert.IsTrue(mock.Object.Amount.Euros == 1);

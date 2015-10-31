@@ -18,6 +18,8 @@ namespace VendingMachine.Vending
         private Product[] _products = new Product[0];
         private Money   _orderBuffer = new Money();
 
+        private Object _lockObject = new Object();
+
         /// <summary>
         /// Vending machine constructor.
         /// </summary>
@@ -124,14 +126,36 @@ namespace VendingMachine.Vending
         {
             if (_products.Length >= productNumber)
             {
-                var product = _products[productNumber-1];
-                var listedProducts = new List<Product>(_products);
-                listedProducts.RemoveAt(productNumber - 1);
-                _products = listedProducts.ToArray();
-                // processing money
-                _amount = _amount + product.Price;
-                _orderBuffer = _orderBuffer - product.Price;
-                return product;
+                var backedProducts = _products;
+                var product = _products[productNumber - 1];
+                try
+                {
+                    RemoveProduct(productNumber);
+                }
+                catch (Exception ex)
+                {
+                    _products = backedProducts;
+                    throw ex;
+                }
+
+                var backedAmount = _amount;
+                var backedOrder = _orderBuffer;
+                try
+                {
+                    // processing money
+                    _amount = _amount + product.Price;
+                    _orderBuffer = _orderBuffer - product.Price;
+                    return product;
+                }
+                catch (Exception ex)
+                {
+                    //in case of any problems with money calculation
+                    //revert all transactions and revert product status
+                    _products = backedProducts;
+                    _amount = backedAmount;
+                    _orderBuffer = backedOrder;
+                    throw ex;
+                }
             }
             else
             {
@@ -154,9 +178,15 @@ namespace VendingMachine.Vending
                 var backedProducts = _products;
                 try
                 {
-                    var initialProducts = _products.Length;
-                    Array.Resize(ref _products, initialProducts + 1);
-                    _products[initialProducts] = newProduct;
+                    /// since product list can be be updated in ANY TIME (according to task)
+                    /// need to ensure it is only changed by one code in a time
+                    /// This will help avoid ordering a product being changed or deleted
+                    lock (_lockObject)
+                    {
+                        var initialProducts = _products.Length;
+                        Array.Resize(ref _products, initialProducts + 1);
+                        _products[initialProducts] = newProduct;
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -178,10 +208,16 @@ namespace VendingMachine.Vending
                 var backedProducts = _products;
                 try
                 {
-                    var product = _products[productId - 1];
-                    var listedProducts = new List<Product>(_products);
-                    listedProducts.RemoveAt(productId - 1);
-                    _products = listedProducts.ToArray();
+                    /// since product list can be be updated in ANY TIME (according to task)
+                    /// need to ensure it is only changed by one code in a time
+                    /// This will help avoid ordering a product being changed or deleted
+                    lock (_lockObject) 
+                    {
+                        var product = _products[productId - 1];
+                        var listedProducts = new List<Product>(_products);
+                        listedProducts.RemoveAt(productId - 1);
+                        _products = listedProducts.ToArray();
+                    }
                 }
                 catch (Exception ex)
                 {
