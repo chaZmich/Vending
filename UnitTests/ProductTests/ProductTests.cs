@@ -56,7 +56,12 @@ namespace UnitTests
         [TestMethod]
         public void ProductOrderedSavesCoins()
         {
-            Assert.IsTrue(false);
+            var mock = new Mock<VendingDevice>("test", 1);
+            mock.Object.Products = new Product[] { new Product() };
+            mock.Object.InsertCoin(new Money() { Cents = 10, Euros = 1 });
+            mock.Object.Buy(1);
+            Assert.IsTrue(mock.Object.Amount.Euros == 1);
+            Assert.IsTrue(mock.Object.Amount.Cents == 10);
         }
 
 

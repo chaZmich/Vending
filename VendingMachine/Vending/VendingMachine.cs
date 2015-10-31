@@ -104,6 +104,11 @@ namespace VendingMachine.Vending
                 var listedProducts = new List<Product>(_products);
                 listedProducts.RemoveAt(productNumber - 1);
                 _products = listedProducts.ToArray();
+                // processing money
+                _amount.Euros = _orderBuffer.Euros;
+                _amount.Cents = _orderBuffer.Cents;
+                _orderBuffer = new Money();
+                //
                 return product;
                 //TODO remove monew and capacity
             }
@@ -156,10 +161,6 @@ namespace VendingMachine.Vending
             get
             {
                 return _orderBuffer;
-            }
-            set
-            {
-                _orderBuffer = value;
             }
         }
     }

@@ -26,20 +26,22 @@ namespace UnitTests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(Exception))]
         public void CoinsGetBackFromEmpty()
         {
             var mock = new Mock<VendingDevice>("test", 1);
-            mock.Object.ReturnMoney();
+            var result = mock.Object.ReturnMoney();
+            Assert.IsTrue(result.Euros == 0);
+            Assert.IsTrue(result.Cents == 0);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(Exception))]
         public void CoinsGetBackMoreThanHave()
         {
             var mock = new Mock<VendingDevice>("test", 1);
-            mock.Object.OrderBuffer = new Money() { Cents = 5 };// TODO check test. probably need another way
-            mock.Object.ReturnMoney();
+            mock.Object.InsertCoin(new Money() { Cents = 5 });// TODO check test. probably need another way           
+            var result = mock.Object.ReturnMoney();
+            Assert.IsTrue(result.Euros == 0);
+            Assert.IsTrue(result.Cents == 5);
         }
 
         [TestMethod]

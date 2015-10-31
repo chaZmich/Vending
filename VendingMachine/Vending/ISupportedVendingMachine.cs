@@ -11,7 +11,7 @@ namespace VendingMachine.Vending
         /// <summary>
         /// Buffered amount of money after coins inserted but product wasn't ordered
         /// </summary>
-        Money OrderBuffer { get; set; }
+        Money OrderBuffer { get; }
         /// <summary>
         /// Maximum product capacity for the machine
         /// </summary>
