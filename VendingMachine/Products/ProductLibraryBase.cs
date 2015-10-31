@@ -43,9 +43,7 @@ namespace VendingMachine.Products
         /// <param name="id">Position of the deleted project</param>
         public virtual void RemoveProduct(int id)
         {
-            var product = _products[id - 1];
-            var listedProducts = new List<Product>(_products);
-            listedProducts.RemoveAt(id - 1);
+            _products.RemoveAt(id - 1);
         }
 
         /// <summary>

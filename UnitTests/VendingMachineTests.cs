@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VendingMachine.Vending;
 using Moq;
 using VendingDevice = VendingMachine.Vending.VendingMachine;
+using VendingMachine.Products;
 
 namespace UnitTests
 {
@@ -23,7 +24,8 @@ namespace UnitTests
         [TestMethod]
         public void NewMachineNotEmptyManufacturer()
         {
-            var mock = new Mock<VendingDevice>("test",0);
+            var mockProducts = new Mock<IProductLibrary>();
+            var mock = new Mock<VendingDevice>("test", 0, mockProducts.Object);
             Assert.IsFalse(mock.Object.Manufacturer == String.Empty);
         }
     }
