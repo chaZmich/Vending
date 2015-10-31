@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VendingMachine.Helpers;
 using VendingMachine.Products;
+using VendingMachine.Finance;
 
 namespace VendingMachine.Vending
 {
@@ -15,9 +16,9 @@ namespace VendingMachine.Vending
     {
         private string  _manufacturer = String.Empty;
         private int     _productCapacity = 0;
-        private Money   _amount = new Money();
+        
         private IProductLibrary _library;
-        private Money   _orderBuffer = new Money();
+        private IMoneyHolder _moneyHolder;
 
         /// <summary>
         /// One lock object for entire machine. To ensure single access to machine properties
@@ -29,11 +30,13 @@ namespace VendingMachine.Vending
         /// </summary>
         /// <param name="manufacturer">Manufacturer name for the machine</param>
         /// <param name="productCapacity">Maximum product capacity for the machine</param>
-        public VendingMachine(string manufacturer, int productCapacity, IProductLibrary library)
+        public VendingMachine(string manufacturer, int productCapacity, IProductLibrary library,
+                    IMoneyHolder moneyHolder)
         {
             _manufacturer = manufacturer;
             _productCapacity = productCapacity;
             _library = library;
+            _moneyHolder = moneyHolder;
         }
 
         /// <summary>
@@ -58,18 +61,7 @@ namespace VendingMachine.Vending
         /// </summary>
         public Money Amount
         {
-            get { return _amount; }
-        }
-
-        /// <summary>
-        /// Order buffer for current sesstion
-        /// </summary>
-        public Money OrderBuffer
-        {
-            get
-            {
-                return _orderBuffer;
-            }
+            get { return _moneyHolder.GetAccountedAmount(); }
         }
 
         /// <summary>
@@ -98,17 +90,17 @@ namespace VendingMachine.Vending
             {
                 throw new ArgumentException("Coin not supported");
             }
-            var _backedBuffer = _orderBuffer;
+            var _backedBuffer = _moneyHolder.GetBufferedAmount();
             try
             {
-                _orderBuffer =_orderBuffer + amount;
-                return _orderBuffer;
+                _moneyHolder.AddBufferedAmount(amount);
+                return _moneyHolder.GetBufferedAmount();
             }
             catch (Exception ex)
             {
                 // in case of calculation failed revert buffer to previous state
                 // and throw exception
-                _orderBuffer = _backedBuffer;
+                _moneyHolder.SetBuffedAmount(_backedBuffer);
                 throw ex;
             }
         }
@@ -119,7 +111,7 @@ namespace VendingMachine.Vending
         /// <returns>Amount of coins inserted before</returns>
         public Money ReturnMoney()
         {
-            return _orderBuffer;
+            return _moneyHolder.GetBufferedAmount();
         }
 
         /// <summary>
@@ -143,13 +135,13 @@ namespace VendingMachine.Vending
                     throw ex;
                 }
 
-                var backedAmount = _amount;
-                var backedOrder = _orderBuffer;
+                var backedAmount = _moneyHolder.GetAccountedAmount();
+                var backedOrder = _moneyHolder.GetBufferedAmount();
                 try
                 {
                     // processing money
-                    _amount = _amount + product.Price;
-                    _orderBuffer = _orderBuffer - product.Price;
+                    _moneyHolder.AddAccountedAmount(product.Price);
+                    _moneyHolder.SubstractBufferedAmount(product.Price);
                     return product;
                 }
                 catch (Exception ex)
@@ -157,8 +149,8 @@ namespace VendingMachine.Vending
                     //in case of any problems with money calculation
                     //revert all transactions and revert product status
                     Products = backedProducts;
-                    _amount = backedAmount;
-                    _orderBuffer = backedOrder;
+                    _moneyHolder.SetAccountedAmount(backedAmount);
+                    _moneyHolder.SetBuffedAmount(backedOrder);
                     throw ex;
                 }
             }

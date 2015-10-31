@@ -56,15 +56,17 @@
   <ItemGroup>
     <Compile Include="Dependency\DependencyFactory.cs" />
     <Compile Include="Helpers\MoneyHelper.cs" />
+    <Compile Include="Finance\MoneyHolder.cs" />
+    <Compile Include="Finance\MoneyHolderBase.cs" />
     <Compile Include="Products\ProductLibrary.cs" />
     <Compile Include="Products\ProductLibraryBase.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Money\IMoneyHolder.cs" />
+    <Compile Include="Finance\IMoneyHolder.cs" />
     <Compile Include="Products\IProductLibrary.cs" />
     <Compile Include="Vending\ISupportedVendingMachine.cs" />
     <Compile Include="Vending\IVendingMachine.cs" />
-    <Compile Include="Money\Money.cs" />
+    <Compile Include="Finance\Money.cs" />
     <Compile Include="Products\Product.cs" />
     <Compile Include="Vending\VendingMachine.cs" />
   </ItemGroup>

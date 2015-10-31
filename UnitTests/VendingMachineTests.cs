@@ -4,6 +4,7 @@ using VendingMachine.Vending;
 using Moq;
 using VendingDevice = VendingMachine.Vending.VendingMachine;
 using VendingMachine.Products;
+using VendingMachine.Finance;
 
 namespace UnitTests
 {
@@ -24,8 +25,9 @@ namespace UnitTests
         [TestMethod]
         public void NewMachineNotEmptyManufacturer()
         {
+            var mockMoney = new Mock<IMoneyHolder>();
             var mockProducts = new Mock<IProductLibrary>();
-            var mock = new Mock<VendingDevice>("test", 0, mockProducts.Object);
+            var mock = new Mock<VendingDevice>("test", 0, mockProducts.Object, mockMoney.Object);
             Assert.IsFalse(mock.Object.Manufacturer == String.Empty);
         }
     }

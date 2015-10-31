@@ -10,10 +10,6 @@ namespace VendingMachine.Vending
     interface ISupportedVendingMachine : IVendingMachine
     {
         /// <summary>
-        /// Buffered amount of money after coins inserted but product wasn't ordered
-        /// </summary>
-        Money OrderBuffer { get; }
-        /// <summary>
         /// Maximum product capacity for the machine
         /// </summary>
         int ProductCapacity { get; }

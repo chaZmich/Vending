@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VendingMachine.Vending
+namespace VendingMachine.Finance
 {
     public struct Money
     {

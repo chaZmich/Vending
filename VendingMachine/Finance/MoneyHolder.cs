@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VendingMachine.Vending
+namespace VendingMachine.Finance
 {
-    interface IMoneyHolder
+    public class MoneyHolder : MoneyHolderBase
     {
 
     }
