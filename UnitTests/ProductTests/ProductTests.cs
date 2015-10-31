@@ -41,7 +41,7 @@ namespace UnitTests
             var mockMoney = new Mock<IMoneyHolder>();
             var products = DependencyFactory.Resolve<ProductLibrary>(new ParameterOverride("productCapacity", 1));
             var mock = new Mock<VendingDevice>("test", products, mockMoney.Object);
-            mock.Object.Products = new Product[] {new Product()};
+            mock.Object.Products = new Product[] {new Product() {Available = 2}};
             products.RemoveProduct(1);
             Assert.IsTrue(mock.Object.Products.Length == 0);
         }
@@ -62,9 +62,9 @@ namespace UnitTests
             var mockMoney = new Mock<IMoneyHolder>();
             var products = DependencyFactory.Resolve<ProductLibrary>(new ParameterOverride("productCapacity", 2));
             var mock = new Mock<VendingDevice>("test", products, mockMoney.Object);
-            mock.Object.Products = new Product[] { new Product() };
+            mock.Object.Products = new Product[] { new Product() {Available = 2} };
             mock.Object.Buy(1);
-            Assert.IsTrue(mock.Object.Products.Length == 0);
+            Assert.IsTrue(mock.Object.Products[0].Available == 1);
         }
 
 
@@ -74,7 +74,7 @@ namespace UnitTests
             var products = DependencyFactory.Resolve<ProductLibrary>(new ParameterOverride("productCapacity", 1));
             var mock = new Mock<VendingDevice>("test", products,
                 DependencyFactory.Resolve<MoneyHolder>());
-            mock.Object.Products = new Product[] { new Product() {Price = new Money() {Euros = 1, Cents = 10}}};
+            mock.Object.Products = new Product[] { new Product() {Available = 5, Price = new Money() {Euros = 1, Cents = 10}}};
             mock.Object.InsertCoin(new Money() { Cents = 10, Euros = 1 });
             mock.Object.Buy(1);
             Assert.IsTrue(mock.Object.Amount.Euros == 1);

@@ -119,7 +119,7 @@ namespace VendingMachine.Vending
                 var product = Products[productNumber - 1];
                 try
                 {
-                    _library.RemoveProduct(productNumber);
+                    _library.UnfillProduct(productNumber);
                 }
                 catch (Exception ex)
                 {

@@ -36,5 +36,18 @@ namespace VendingMachine.Products
         /// </summary>
         /// <param name="product">Product to add</param>
         void AddProduct(Product product);
+
+        /// <summary>
+        /// Fills product amount to maximum
+        /// </summary>
+        /// <param name="id">id of the product to be filled</param>
+        void FillProduct(int id);
+
+           /// <summary>
+        /// Default implementation for removing project
+        /// Remove item from the collection (by id)
+        /// </summary>
+        /// <param name="id">Position of the deleted project</param>
+        void UnfillProduct(int id);
     }
 }
