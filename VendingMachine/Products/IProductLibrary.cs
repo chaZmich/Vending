@@ -9,6 +9,11 @@ namespace VendingMachine.Products
     public interface IProductLibrary
     {
         /// <summary>
+        /// Maximum product capacity for the livrary
+        /// </summary>
+        int ProductCapacity { get; } 
+
+        /// <summary>
         /// Gets all products from the collection
         /// </summary>
         /// <returns>Products collection</returns>

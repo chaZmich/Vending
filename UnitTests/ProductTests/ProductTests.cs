@@ -18,7 +18,8 @@ namespace UnitTests
         public void AddProductIncreasingTotal()
         {
             var mockMoney = new Mock<IMoneyHolder>();
-            var mock = new Mock<VendingDevice>("test", 2, DependencyFactory.Resolve<ProductLibrary>(), mockMoney.Object);
+            var library = DependencyFactory.Resolve<ProductLibrary>();
+            var mock = new Mock<VendingDevice>("test", 2, library, mockMoney.Object);
             var products =  mock.Object.Products.Length;
             mock.Object.AddProduct(new Product());
             Assert.IsTrue(mock.Object.Products.Length == products + 1);

@@ -12,29 +12,21 @@ namespace VendingMachine.Vending
     /// <summary>
     /// Vending machine basic implementation
     /// </summary>
-    public class VendingMachine : ISupportedVendingMachine
+    public class VendingMachine : IVendingMachine
     {
-        private string  _manufacturer = String.Empty;
-        private int     _productCapacity = 0;
-        
+        private string  _manufacturer = String.Empty;        
         private IProductLibrary _library;
         private IMoneyHolder _moneyHolder;
-
-        /// <summary>
-        /// One lock object for entire machine. To ensure single access to machine properties
-        /// </summary>
-        private Object _lockObject = new Object();
 
         /// <summary>
         /// Vending machine constructor.
         /// </summary>
         /// <param name="manufacturer">Manufacturer name for the machine</param>
         /// <param name="productCapacity">Maximum product capacity for the machine</param>
-        public VendingMachine(string manufacturer, int productCapacity, IProductLibrary library,
+        public VendingMachine(string manufacturer, IProductLibrary library,
                     IMoneyHolder moneyHolder)
         {
             _manufacturer = manufacturer;
-            _productCapacity = productCapacity;
             _library = library;
             _moneyHolder = moneyHolder;
         }
@@ -127,7 +119,7 @@ namespace VendingMachine.Vending
                 var product = Products[productNumber - 1];
                 try
                 {
-                    RemoveProduct(productNumber);
+                    _library.RemoveProduct(productNumber);
                 }
                 catch (Exception ex)
                 {
@@ -158,71 +150,6 @@ namespace VendingMachine.Vending
             {
                 throw new IndexOutOfRangeException("Product does not exist");
             }
-        }
-
-        /// <summary>
-        /// Maximum product capacity
-        /// </summary>
-        public int ProductCapacity
-        {
-            get { return _productCapacity; }
-        }
-
-        public void AddProduct(Product newProduct)
-        {
-            if (Products.Length < _productCapacity)
-            {
-                var backedProducts = Products;
-                try
-                {
-                    /// since product list can be be updated in ANY TIME (according to task)
-                    /// need to ensure it is only changed by one code in a time
-                    /// This will help avoid ordering a product being changed or deleted
-                    lock (_lockObject)
-                    {
-                        _library.AddProduct(newProduct);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    // revert any changes to products before sending ex further
-                    Products = backedProducts;
-                    throw ex;
-                }
-            }
-            else
-            {
-                throw new IndexOutOfRangeException("Product capacity limited");
-            }
-        }
-
-        public void RemoveProduct(int productId)
-        {
-            if (Products.Length > 0)
-            {
-                var backedProducts = Products;
-                try
-                {
-                    /// since product list can be be updated in ANY TIME (according to task)
-                    /// need to ensure it is only changed by one code in a time
-                    /// This will help avoid ordering a product being changed or deleted
-                    lock (_lockObject) 
-                    {
-                        _library.RemoveProduct(productId);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    // revert any changes to products before sending ex further
-                    Products = backedProducts;
-                    throw ex;
-                }
-            }
-            else
-            {
-                throw new IndexOutOfRangeException("Product does not exists");
-            }
-            
         }
     }
 }

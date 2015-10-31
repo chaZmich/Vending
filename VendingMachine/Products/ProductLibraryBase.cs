@@ -8,23 +8,49 @@ namespace VendingMachine.Products
 {
     public abstract class ProductLibraryBase : IProductLibrary
     {
+        #region private fields
         private List<Product> _products = new List<Product>();
 
+        private int _productCapacity = 0;
+
         /// <summary>
-        /// Product library base class
+        /// One lock object for entire machine. To ensure single access to machine properties
+        /// </summary>
+        private Object _lockObject = new Object();
+        #endregion
+
+
+        #region CTOR
+        /// <summary>
+        /// Default ctor
         /// </summary>
         public ProductLibraryBase()
         {
 
+        }
+        /// <summary>
+        /// Product library base class
+        /// </summary>
+        public ProductLibraryBase(int productCapacity)
+        {
+            _productCapacity = productCapacity;
         }
 
         /// <summary>
         /// Product library base class
         /// </summary>
         /// <param name="products"></param>
-        public ProductLibraryBase(List<Product> products)
+        public ProductLibraryBase(int productCapacity,List<Product> products)
         {
             _products = products;
+            _productCapacity = productCapacity;
+        } 
+        #endregion
+
+
+        public int ProductCapacity
+        {
+            get { throw new NotImplementedException(); }
         }
 
         /// <summary>
@@ -43,7 +69,31 @@ namespace VendingMachine.Products
         /// <param name="id">Position of the deleted project</param>
         public virtual void RemoveProduct(int id)
         {
-            _products.RemoveAt(id - 1);
+            
+            if (_products.Count > 0)
+            {
+                var backedProducts = _products;
+                try
+                {
+                    /// since product list can be be updated in ANY TIME (according to task)
+                    /// need to ensure it is only changed by one code in a time
+                    /// This will help avoid ordering a product being changed or deleted
+                    lock (_lockObject)
+                    {
+                        _products.RemoveAt(id - 1);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // revert any changes to products before sending ex further
+                    _products = backedProducts;
+                    throw ex;
+                }
+            }
+            else
+            {
+                throw new IndexOutOfRangeException("Product does not exists");
+            }
         }
 
         /// <summary>
@@ -53,7 +103,31 @@ namespace VendingMachine.Products
         /// <param name="product">Product to be added</param>
         public virtual void AddProduct(Product product)
         {
-            _products.Add(product);
+            if (_products.Count < _productCapacity)
+            {
+                var backedProducts = _products;
+                try
+                {
+                    /// since product list can be be updated in ANY TIME (according to task)
+                    /// need to ensure it is only changed by one code in a time
+                    /// This will help avoid ordering a product being changed or deleted
+                    lock (_lockObject)
+                    {
+                        _products.Add(product);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // revert any changes to products before sending ex further
+                    _products = backedProducts;
+                    throw ex;
+                }
+            }
+            else
+            {
+                throw new IndexOutOfRangeException("Product capacity limited");
+            }
+            
         }
 
 

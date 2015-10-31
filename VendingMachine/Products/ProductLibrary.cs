@@ -9,5 +9,12 @@ namespace VendingMachine.Products
     public class ProductLibrary : ProductLibraryBase
     {
         /// Product library class. Default implementations are ok for now
+        /// 
+        
+        ///Hiding parameterless constructor to avoid creating libraries without capacity
+        private ProductLibrary()
+        {
+
+        }
     }
 }
