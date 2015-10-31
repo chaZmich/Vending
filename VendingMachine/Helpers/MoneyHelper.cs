@@ -13,7 +13,7 @@ namespace VendingMachine.Helpers
         static List<int> SupportedEuroCoins = new List<int>() { 1, 2 };
         
         /// <summary>
-        /// Simple validation for coin values. 
+        /// Simple validation for coin values. Assuming coints are inserted one by one
         /// </summary>
         /// <param name="money">Added amount of money</param>
         /// <returns>True coin is supported</returns>

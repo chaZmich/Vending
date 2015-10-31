@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VendingMachine.Helpers;
+using VendingMachine.Products;
 
 namespace VendingMachine.Vending
 {
@@ -15,9 +16,12 @@ namespace VendingMachine.Vending
         private string  _manufacturer = String.Empty;
         private int     _productCapacity = 0;
         private Money   _amount = new Money();
-        private Product[] _products = new Product[0];
+        private IProductLibrary _library;
         private Money   _orderBuffer = new Money();
 
+        /// <summary>
+        /// One lock object for entire machine. To ensure single access to machine properties
+        /// </summary>
         private Object _lockObject = new Object();
 
         /// <summary>
@@ -25,14 +29,15 @@ namespace VendingMachine.Vending
         /// </summary>
         /// <param name="manufacturer">Manufacturer name for the machine</param>
         /// <param name="productCapacity">Maximum product capacity for the machine</param>
-        public VendingMachine(string manufacturer, int productCapacity)
+        public VendingMachine(string manufacturer, int productCapacity, IProductLibrary library)
         {
             _manufacturer = manufacturer;
             _productCapacity = productCapacity;
+            _library = library;
         }
 
         /// <summary>
-        /// Do not allow creating vending machines without manufacturer set
+        /// Do not allow creating vending machines without manufacturer and capacity set
         /// So hiding default constructor
         /// </summary>
         private VendingMachine()
@@ -74,11 +79,11 @@ namespace VendingMachine.Vending
         {
             get
             {
-                return _products;
+                return _library.GetProducts();
             }
             set
             {
-                _products = value;
+                _library.SetProducts(new List<Product>(value));
             }
         }
 
@@ -93,7 +98,7 @@ namespace VendingMachine.Vending
             {
                 throw new ArgumentException("Coin not supported");
             }
-            var _bufferState = _orderBuffer;
+            var _backedBuffer = _orderBuffer;
             try
             {
                 _orderBuffer =_orderBuffer + amount;
@@ -103,7 +108,7 @@ namespace VendingMachine.Vending
             {
                 // in case of calculation failed revert buffer to previous state
                 // and throw exception
-                _orderBuffer = _bufferState;
+                _orderBuffer = _backedBuffer;
                 throw ex;
             }
         }
@@ -124,17 +129,17 @@ namespace VendingMachine.Vending
         /// <returns>Ordered product</returns>
         public Product Buy(int productNumber)
         {
-            if (_products.Length >= productNumber)
+            if (Products.Length >= productNumber)
             {
-                var backedProducts = _products;
-                var product = _products[productNumber - 1];
+                var backedProducts = Products;
+                var product = Products[productNumber - 1];
                 try
                 {
                     RemoveProduct(productNumber);
                 }
                 catch (Exception ex)
                 {
-                    _products = backedProducts;
+                    Products = backedProducts;
                     throw ex;
                 }
 
@@ -151,7 +156,7 @@ namespace VendingMachine.Vending
                 {
                     //in case of any problems with money calculation
                     //revert all transactions and revert product status
-                    _products = backedProducts;
+                    Products = backedProducts;
                     _amount = backedAmount;
                     _orderBuffer = backedOrder;
                     throw ex;
@@ -173,9 +178,9 @@ namespace VendingMachine.Vending
 
         public void AddProduct(Product newProduct)
         {
-            if (_products.Length < _productCapacity)
+            if (Products.Length < _productCapacity)
             {
-                var backedProducts = _products;
+                var backedProducts = Products;
                 try
                 {
                     /// since product list can be be updated in ANY TIME (according to task)
@@ -183,15 +188,13 @@ namespace VendingMachine.Vending
                     /// This will help avoid ordering a product being changed or deleted
                     lock (_lockObject)
                     {
-                        var initialProducts = _products.Length;
-                        Array.Resize(ref _products, initialProducts + 1);
-                        _products[initialProducts] = newProduct;
+                        _library.AddProduct(newProduct);
                     }
                 }
                 catch (Exception ex)
                 {
                     // revert any changes to products before sending ex further
-                    _products = backedProducts;
+                    Products = backedProducts;
                     throw ex;
                 }
             }
@@ -203,9 +206,9 @@ namespace VendingMachine.Vending
 
         public void RemoveProduct(int productId)
         {
-            if (_products.Length > 0)
+            if (Products.Length > 0)
             {
-                var backedProducts = _products;
+                var backedProducts = Products;
                 try
                 {
                     /// since product list can be be updated in ANY TIME (according to task)
@@ -213,16 +216,13 @@ namespace VendingMachine.Vending
                     /// This will help avoid ordering a product being changed or deleted
                     lock (_lockObject) 
                     {
-                        var product = _products[productId - 1];
-                        var listedProducts = new List<Product>(_products);
-                        listedProducts.RemoveAt(productId - 1);
-                        _products = listedProducts.ToArray();
+                        _library.RemoveProduct(productId);
                     }
                 }
                 catch (Exception ex)
                 {
                     // revert any changes to products before sending ex further
-                    _products = backedProducts;
+                    Products = backedProducts;
                     throw ex;
                 }
             }

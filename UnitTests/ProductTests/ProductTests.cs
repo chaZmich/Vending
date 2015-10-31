@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VendingMachine.Vending;
 using Moq;
 using VendingDevice = VendingMachine.Vending.VendingMachine;
+using VendingMachine.Products;
 
 namespace UnitTests
 {

@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VendingMachine.Vending;
 
-namespace VendingMachine.Vending
+namespace VendingMachine.Products
 {
     public struct Product
     {

@@ -45,6 +45,7 @@
       <HintPath>packages\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.RegistrationByConvention.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -53,18 +54,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dependency\DependencyFactory.cs" />
     <Compile Include="Helpers\MoneyHelper.cs" />
+    <Compile Include="Products\ProductLibrary.cs" />
+    <Compile Include="Products\ProductLibraryBase.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Money\IMoneyHolder.cs" />
+    <Compile Include="Products\IProductLibrary.cs" />
     <Compile Include="Vending\ISupportedVendingMachine.cs" />
     <Compile Include="Vending\IVendingMachine.cs" />
-    <Compile Include="Vending\Money.cs" />
-    <Compile Include="Vending\Product.cs" />
+    <Compile Include="Money\Money.cs" />
+    <Compile Include="Products\Product.cs" />
     <Compile Include="Vending\VendingMachine.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
