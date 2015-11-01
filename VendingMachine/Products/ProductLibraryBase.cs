@@ -51,6 +51,7 @@ namespace VendingMachine.Products
         public int ProductCapacity
         {
             get { throw new NotImplementedException(); }
+            set { _productCapacity = value; }
         }
 
         #region public properties

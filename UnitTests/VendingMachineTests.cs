@@ -9,7 +9,7 @@ using VendingMachine.Finance;
 namespace UnitTests
 {
     [TestClass]
-    public class VendingMachineTests
+    public class VendingMachineTests : TestBase
     {
         [TestMethod]
         public void BasicTest()
@@ -25,9 +25,7 @@ namespace UnitTests
         [TestMethod]
         public void NewMachineNotEmptyManufacturer()
         {
-            var mockMoney = new Mock<IMoneyHolder>();
-            var mockProducts = new Mock<IProductLibrary>(0);
-            var mock = new Mock<VendingDevice>("test", mockProducts.Object, mockMoney.Object);
+            var mock = new Mock<VendingDevice>("test", InitProductLibraryMock(0), InitMoneyHolderMock());
             Assert.IsFalse(mock.Object.Manufacturer == String.Empty);
         }
     }

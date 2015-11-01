@@ -11,7 +11,7 @@ namespace VendingMachine.Products
         /// <summary>
         /// Maximum product capacity for the livrary
         /// </summary>
-        int ProductCapacity { get; } 
+        int ProductCapacity { get; set; } 
 
         /// <summary>
         /// Gets all products from the collection

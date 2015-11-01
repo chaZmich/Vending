@@ -12,14 +12,13 @@ using VendingMachine.Finance;
 namespace UnitTests
 {
     [TestClass]
-    public class ProductTests
+    public class ProductTests : TestBase
     {       
         [TestMethod]
         public void AddProductIncreasingTotal()
         {
-            var mockMoney = new Mock<IMoneyHolder>();
-            var library = DependencyFactory.Resolve<ProductLibrary>(new ParameterOverride("productCapacity", 5));
-            var mock = new Mock<VendingDevice>("test", library, mockMoney.Object);
+            var library = InitProductLibraryBinding(5);
+            var mock = new Mock<VendingDevice>("test", library, InitMoneyHolderMock());
             var products =  mock.Object.Products.Length;
             library.AddProduct(new Product());
             Assert.IsTrue(mock.Object.Products.Length == products + 1);
@@ -29,20 +28,18 @@ namespace UnitTests
         [ExpectedException(typeof(IndexOutOfRangeException))]
         public void AddProductOverMaximumCapacity()
         {
-            var library = DependencyFactory.Resolve<ProductLibrary>(new ParameterOverride("productCapacity", 0));
-            var mockMoney = new Mock<IMoneyHolder>();
-            var mock = new Mock<VendingDevice>("test", library, mockMoney.Object);
+            var library = InitProductLibraryBinding(0);
+            var mock = new Mock<VendingDevice>("test", library, InitMoneyHolderMock());
             library.AddProduct(new Product());
         }
 
         [TestMethod]
         public void RemoveProductDecreasingTotal()
         {
-            var mockMoney = new Mock<IMoneyHolder>();
-            var products = DependencyFactory.Resolve<ProductLibrary>(new ParameterOverride("productCapacity", 1));
-            var mock = new Mock<VendingDevice>("test", products, mockMoney.Object);
+            var library = InitProductLibraryMock(1);
+            var mock = new Mock<VendingDevice>("test", library, InitMoneyHolderMock());
             mock.Object.Products = new Product[] {new Product() {Available = 2}};
-            products.RemoveProduct(1);
+            library.RemoveProduct(1);
             Assert.IsTrue(mock.Object.Products.Length == 0);
         }
 
@@ -50,18 +47,15 @@ namespace UnitTests
         [ExpectedException(typeof(IndexOutOfRangeException))]
         public void RemoveProductFromEmptyProductsCausesException()
         {
-            var products = DependencyFactory.Resolve<ProductLibrary>(new ParameterOverride("productCapacity", 0));
-            var mockMoney = new Mock<IMoneyHolder>();
-            var mock = new Mock<VendingDevice>("test", products, mockMoney.Object);
-            products.RemoveProduct(1);
+            var library = InitProductLibraryBinding(0);
+            var mock = new Mock<VendingDevice>("test", library, InitMoneyHolderMock());
+            library.RemoveProduct(1);
         }
 
         [TestMethod]
         public void ProductOrderedDecreaseTotal()
         {
-            var mockMoney = new Mock<IMoneyHolder>();
-            var products = DependencyFactory.Resolve<ProductLibrary>(new ParameterOverride("productCapacity", 2));
-            var mock = new Mock<VendingDevice>("test", products, mockMoney.Object);
+            var mock = new Mock<VendingDevice>("test", InitProductLibraryBinding(2), InitMoneyHolderMock());
             mock.Object.Products = new Product[] { new Product() {Available = 2} };
             mock.Object.Buy(1);
             Assert.IsTrue(mock.Object.Products[0].Available == 1);
@@ -71,9 +65,7 @@ namespace UnitTests
         [TestMethod]
         public void ProductOrderedSavesCoins()
         {
-            var products = DependencyFactory.Resolve<ProductLibrary>(new ParameterOverride("productCapacity", 1));
-            var mock = new Mock<VendingDevice>("test", products,
-                DependencyFactory.Resolve<MoneyHolder>());
+            var mock = new Mock<VendingDevice>("test", InitProductLibraryBinding(1), InitMoneyHolderBinding());
             mock.Object.Products = new Product[] { new Product() {Available = 5, Price = new Money() {Euros = 1, Cents = 10}}};
             mock.Object.InsertCoin(new Money() { Cents = 10, Euros = 1 });
             mock.Object.Buy(1);
@@ -86,9 +78,7 @@ namespace UnitTests
         [ExpectedException(typeof(IndexOutOfRangeException))]
         public void ProductOrderedNotExistingProduct()
         {
-            var mockMoney = new Mock<IMoneyHolder>();
-            var products = DependencyFactory.Resolve<ProductLibrary>(new ParameterOverride("productCapacity", 1));
-            var mock = new Mock<VendingDevice>("test", products, mockMoney.Object);
+            var mock = new Mock<VendingDevice>("test", InitProductLibraryMock(1), InitMoneyHolderMock());
             mock.Object.Products = new Product[] { new Product() };
             mock.Object.Buy(-999);
         }
