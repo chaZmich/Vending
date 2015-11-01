@@ -23,6 +23,7 @@ namespace UnitTests
             library.AddProduct(new Product());
             Assert.IsTrue(mock.Object.Products.Length == products + 1);
         }
+        
 
         [TestMethod]
         [ExpectedException(typeof(IndexOutOfRangeException))]
@@ -33,6 +34,68 @@ namespace UnitTests
             library.AddProduct(new Product());
         }
 
+        [TestMethod]
+        public void FillProductIncreasingAmount()
+        {
+            var library = InitProductLibraryBinding(5);
+            library.AddProduct(new Product() { Available = 0 });
+            library.FillProduct(1);
+            Assert.IsTrue(library.GetProducts()[0].Available == 1);
+        }
+        
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void FillProductThatDoesNotExist()
+        {
+            var library = InitProductLibraryBinding(5);
+            library.AddProduct(new Product() { Available = 0 });
+            library.FillProduct(10);
+        }
+        
+        [TestMethod]
+        [ExpectedException(typeof(IndexOutOfRangeException))]
+        public void UnfillEmptyProducts()
+        {
+            var library = InitProductLibraryBinding(5);
+            library.AddProduct(new Product() { Available = 0 });
+            library.UnfillProduct(1);
+        }
+
+        [TestMethod]
+        public void UnfillProductDecreasingAmount()
+        {
+            var library = InitProductLibraryBinding(5);
+            library.AddProduct(new Product() { Available = 10 });
+            library.UnfillProduct(1);
+            Assert.IsTrue(library.GetProducts()[0].Available == 9);
+        }
+
+        [TestMethod]
+        public void GetAllProductsReturnsAllProducts()
+        {
+            var library = InitProductLibraryBinding(2);
+            library.AddProduct(new Product());
+            library.AddProduct(new Product());
+            Assert.IsTrue(library.GetProducts().Length == 2);
+        }
+
+        [TestMethod]
+        public void SetProductsSetsProducts()
+        {
+            var library = InitProductLibraryBinding(2);
+            library.SetProducts(new List<Product>() { new Product(), new Product() });
+            Assert.IsTrue(library.GetProducts().Length == 2);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void SetProductsOverMaximumCapacityCausesError()
+        {
+            var library = InitProductLibraryBinding(0);
+            library.SetProducts(new List<Product>() { new Product(), new Product() });
+        }
+        
+        
         [TestMethod]
         public void RemoveProductDecreasingTotal()
         {

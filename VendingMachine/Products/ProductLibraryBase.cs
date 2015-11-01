@@ -144,7 +144,7 @@ namespace VendingMachine.Products
             }
             else
             {
-                throw new ArgumentOutOfRangeException("Product collection is bigger then maximum capacity");
+                throw new ArgumentOutOfRangeException("Product collection is bigger than maximum capacity");
             }
         }        
 
@@ -154,24 +154,31 @@ namespace VendingMachine.Products
         /// <param name="id">id of the product to be filled</param>
         public void FillProduct(int id)
         {
-            var backedProducts = _products;
-            try
+            if (_products.Count >= id)
             {
-                /// since product list can be be updated in ANY TIME (according to task)
-                /// need to ensure it is only changed by one code in a time
-                /// This will help avoid ordering a product being changed or deleted
-                lock (_lockObject)
+                var backedProducts = _products;
+                try
                 {
-                    var product = _products[id-1];
-                    product.Available += 1;
-                    _products[id - 1] = product;
+                    /// since product list can be be updated in ANY TIME (according to task)
+                    /// need to ensure it is only changed by one code in a time
+                    /// This will help avoid ordering a product being changed or deleted
+                    lock (_lockObject)
+                    {
+                        var product = _products[id - 1];
+                        product.Available += 1;
+                        _products[id - 1] = product;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // revert any changes to products before sending ex further
+                    _products = backedProducts;
+                    throw ex;
                 }
             }
-            catch (Exception ex)
+            else
             {
-                // revert any changes to products before sending ex further
-                _products = backedProducts;
-                throw ex;
+                throw new ArgumentOutOfRangeException("Product does not exist");
             }
         }
 
@@ -184,7 +191,7 @@ namespace VendingMachine.Products
         public virtual void UnfillProduct(int id)
         {
 
-            if (_products.Count > 0 && _products[id-1].Available >= 0)
+            if (_products.Count >= id && _products[id - 1].Available > 0)
             {
                 var backedProducts = _products;
                 try
